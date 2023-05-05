@@ -1,42 +1,14 @@
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
-import React from 'react'
+import { askType } from '@/services/types';
+import React, { useEffect } from 'react'
 
-interface askProp {
-  _id: string;
-  status: { hidden: boolean, hiddenDate: string };
-  username: string;
-  categories: string[];
-  message: string;
-}
 
-// TODO: use useAppSelector to replace askData below with actual ask data
-const tempAsksData: askProp[] = [
-  {
-    _id: 'ADKEET773D',
-    status: { hidden: false, hiddenDate: '' },
-    username: 'author o\'ask',
-    categories: ['new, another cat, edu, economy'],
-    message: 'Please who knows a good resource to learn coding on your own?'
-  },
-  {
-    _id: 'NDK7DT76K',
-    status: { hidden: false, hiddenDate: '' },
-    username: 'author scholar',
-    categories: ['education'],
-    message: 'how to understand the art of effective studying'
-  },
-  {
-    _id: 'J6K4G677L5',
-    status: { hidden: false, hiddenDate: '' },
-    username: 'user 34',
-    categories: ['food'],
-    message: 'Where is the nearest restaurant'
-  }
-]
+
+const askData: askType[] = [];
 
 const Asks = () => {
-  const [asksData, setAsksData] = React.useState<askProp[]>(tempAsksData)
+  const [asksData, setAsksData] = React.useState<askType[]>(askData)
   const handleHide = (id: string) => {
     for (let ask of asksData) {
       if (ask._id === id) {
@@ -44,7 +16,7 @@ const Asks = () => {
         const date = new Date();
         const formatedDate = `${date.getDate()} - ${date.getMonth() + 1} - ${date.getFullYear()}`;
         setAsksData(prevData => {
-          const newData: askProp[] = Array.from(prevData);
+          const newData: askType[] = Array.from(prevData);
           newData[prevData.indexOf(ask)].status = { hidden: !_status.hidden, hiddenDate: !_status.hidden ? formatedDate : '' }
           // console.log(newData[prevData.indexOf(ask)])
           return newData
@@ -55,26 +27,26 @@ const Asks = () => {
   return (
     <div className="flex flex-col justify-between min-h-[100vh]">
       <Navbar />
-      <div className="flex-1 p-5 md:p-14 text-primary overflow-x-scroll">
-        <table className="table-auto border-separate border-y border-primary border-spacing-7">
-        <caption className="text-lg text-start pl-7">Asks</caption>
+      <div className="flex-1 m-5 md:m-[48px] text-secondary overflow-x-scroll">
+        <table className="border-collapse table-auto w-full">
+        <caption className="text-md font-bold text-start py-5"><span className="pr-10">Asks: <span className="text-tertiary">{asksData.length}</span></span><span>Hidden asks: <span className="text-tertiary">{asksData.filter(a=>a.status.hidden===true).length}</span></span></caption>
           <thead>
-            <tr className="text-xl md:text-2xl">
-              <td>Action</td>
-              <td>Categories</td>
-              <td>Message</td>
-              <td>Hidden</td>
-              <td>Username</td>
+            <tr className="text-lg md:text-xl border-primary border-b flex-row w-full h-10">
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Action</td>
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Hidden</td>
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Username</td>
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Categories</td>
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Message</td>
             </tr>
           </thead>
           <tbody>
             {asksData.map(ask => (
-              <tr key={ask._id} className="align-top">
-                <td onClick={() => handleHide(ask._id)} className="flex p-1 hover:cursor-pointer">{ask.status.hidden ? <span className="text-white bg-primary hover:text-primary hover:bg-transparent ring-1 ring-primary px-3 py-1 flex-1 flex justify-center">show</span> : <span className="hover:text-white hover:bg-primary ring-1 hover:ring-0 ring-primary px-3 py-1 flex-1 flex justify-center">hide</span>}</td>
-                <td>{ask.categories ? ask.categories : '_'}</td>
-                <td>{ask.message ? ask.message : '_'}</td>
-                <td>{ask.status.hiddenDate ? ask.status.hiddenDate : '_'}</td>
-                <td>{ask.username}</td>
+              <tr key={ask._id} className="align-top h-12 hover:bg-tertiary hover:bg-opacity-10">
+                <td onClick={() => handleHide(ask._id)} className="pl-1 flex border-r-primary border-r md:border-0 pt-2 hover:cursor-pointer align-middle">{ask.status.hidden ? <span className="text-white bg-primary ring-1 hover:ring-2 hover:ring-tertiary ring-primary px-3 py-1 w-16 flex justify-center rounded-md">show</span> : <span className="ring-1 hover:ring-2 hover:ring-primary ring-tertiary px-3 py-1 w-16 flex justify-center rounded-md">hide</span>}</td>
+                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 text-primaryLight">{ask.status.hiddenDate ? ask.status.hiddenDate : '_'}</td>
+                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">{ask.userInfo.username}</td>
+                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 hideOverflowText">{ask.categories}</td>
+                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 hideOverflowText">{ask.message}</td>
               </tr>
             ))}
           </tbody>

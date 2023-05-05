@@ -1,37 +1,13 @@
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
+import { userType } from '@/services/types';
 import React from 'react'
-interface userProp {
-  _id: string;
-  status: { banned: boolean, bannedDate: string }
-  username: string;
-  whatsapp: number | undefined;
-  telephone: number | undefined;
-  email: string | undefined;
-}
 
-// TODO: remove usersData replace with data fromr redux store
-const tempUsersData: userProp[] = [
-  {
-    _id: 'DDEI8386SS',
-    status: { banned: false, bannedDate: '' },
-    username: 'user one',
-    whatsapp: 3344422,
-    telephone: 0,
-    email: 'user@email.ors',
-  },
-  {
-    _id: 'EEKHE3880S',
-    status: { banned: false, bannedDate: '' },
-    username: 'user two',
-    whatsapp: 334234422,
-    telephone: 994447772,
-    email: 'user23@email.ors',
-  },
-]
+
+const userData:userType[] =[]
 
 const Users = () => {
-  const [usersData, setUsersData] = React.useState<userProp[]>(tempUsersData);
+  const [usersData, setUsersData] = React.useState<userType[]>(userData);
   const handleBan = (id: string) => {
     for (let user of usersData) {
       if (user._id === id) {
@@ -39,7 +15,7 @@ const Users = () => {
         const date = new Date();
         const formatedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
         setUsersData(prevData => {
-          const newData: userProp[] = Array.from(prevData);
+          const newData: userType[] = Array.from(prevData);
           newData[prevData.indexOf(user)].status = { banned: !_status.banned, bannedDate: !_status.banned ? formatedDate : '' }
           return newData
         })
@@ -50,27 +26,29 @@ const Users = () => {
     <div className="flex flex-col justify-between min-h-[100vh]">
       <Navbar />
       <div className="flex-1 p-5 md:p-14 text-primary overflow-x-scroll">
-        <table className="table-auto border-separate border-y border-primary border-spacing-7">
-          <caption className="text-lg text-start pl-7">Users</caption>
+        <table className="table-auto border-collapse w-full">
+          <caption className="text-md font-bold text-start py-5"><span className="pr-10">Users: <span className="text-tertiary">{usersData.length}</span></span><span>Banned users: <span className="text-tertiary">{usersData.filter(u=>u.status.banned===true).length}</span></span></caption>
           <thead>
-            <tr className="text-xl md:text-2xl">
-              <td>Action</td>
-              <td>Banned</td>
-              <td>Username</td>
-              <td>WhatsApp</td>
-              <td>Telephone</td>
-              <td>Email</td>
+            <tr className="text-lg md:text-xl border-b border-primary">
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Action</td>
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Banned</td>
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Profile</td>
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Username</td>
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">WhatsApp</td>
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Telephone</td>
+              <td className="pr-5 pl-1 md:pr-10 border-r-primary border-r md:border-0">Email</td>
             </tr>
           </thead>
           <tbody>
             {usersData.map(user => (
-              <tr key={user._id} className="">
-                <td onClick={() => handleBan(user._id)} className="flex p-1 hover:cursor-pointer">{user.status.banned ? <span className="text-white bg-primary hover:text-primary hover:bg-transparent ring-1 ring-primary px-3 py-1 flex-1 flex justify-center">unban</span> : <span className="hover:text-white hover:bg-primary ring-1 hover:ring-0 ring-primary px-5 py-1 flex-1 flex justify-center">ban</span>}</td>
-                <td>{user.status.bannedDate ? user.status.bannedDate : '_'}</td>
-                <td>{user.username}</td>
-                <td>{user.whatsapp ? user.whatsapp : '_'}</td>
-                <td>{user.telephone ? user.telephone : '_'}</td>
-                <td>{user.email ? user.email : '_'}</td>
+              <tr key={user._id} className="h-12 hover:bg-tertiary hover:bg-opacity-10">
+                <td onClick={() => handleBan(user._id)} className="pl-1 flex border-r-primary border-r md:border-0 pt-2 hover:cursor-pointer align-middle">{user.status.banned ? <span className="text-white bg-primary ring-1 hover:ring-2 hover:ring-tertiary ring-primary px-3 py-1 w-16 flex justify-center rounded-md">unban</span> : <span className="ring-1 hover:ring-2 hover:ring-primary ring-tertiary px-3 py-1 w-16 flex justify-center rounded-md">ban</span>}</td>
+                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">{user.status.bannedDate ? user.status.bannedDate : '_'}</td>
+                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">{user.photo}</td>
+                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">{user.username}</td>
+                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">{user.whatsapp ? user.whatsapp : '_'}</td>
+                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">{user.telephone}</td>
+                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">{user.email ? user.email : '_'}</td>
               </tr>
             ))}
           </tbody>
