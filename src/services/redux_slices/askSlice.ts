@@ -1,20 +1,36 @@
-import {createSlice} from '@reduxjs/toolkit';
-import { askType } from '../types';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import { askAsyncState } from '../types';
+import axios from 'axios';
 
-const initialState = [] as askType[];
+const initialState: askAsyncState = {
+  loading: false,
+  asks: [],
+  error: ''
+}
 
-const exerciseSlice = createSlice({
-  name: 'asks',
+
+export const fetchAsks = createAsyncThunk('user/fetchAsks', ()=>{
+  return axios.get('https://whoget-api.onrender.com/api/asks').then(response=>response.data)
+}) 
+const askSlice = createSlice({
+  name: "ask",
   initialState,
-  reducers: {
-    loadExercises: (state, action) => {
-      state = action.payload;
-    },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(fetchAsks.pending, state => {
+      state.loading = true;
+    });
+    builder.addCase(fetchAsks.fulfilled, (state, action) => {
+      state.loading = false,
+      state.asks = action.payload,
+      state.error = '';
+    });
+    builder.addCase(fetchAsks.rejected, (state, action) => {
+      state.loading = false,
+      state.asks = [],
+      state.error = action.error.message!==undefined? action.error.message: 'an error occurred' ;
+    });
   },
-  // extraReducers: builder => {
-  //   builder.addCase()
-  // },
-});
+})
 
-export default exerciseSlice.reducer;
-export const {loadExercises} = exerciseSlice.actions;
+export default askSlice.reducer;

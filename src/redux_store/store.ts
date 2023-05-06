@@ -1,13 +1,11 @@
 import {configureStore} from '@reduxjs/toolkit';
-// import uiControlReducer from '../slices/uiControlSlice';
-// import exerciseReducer from '../slices/exerciseSlice';
 import userReducer from '../services/redux_slices/userSlice'
+import askReducer from '../services/redux_slices/askSlice'
 
 const store = configureStore({
   reducer: {
     user: userReducer,
-    // uiControls: uiControlReducer,
-    // exerciseStore: exerciseReducer,
+    ask: askReducer,
   },
 });
 

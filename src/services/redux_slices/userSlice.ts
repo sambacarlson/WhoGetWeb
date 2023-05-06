@@ -1,7 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import { userAsyncState, userType } from '../types';
 import axios from 'axios';
-import error from 'next/error';
 
 const initialState: userAsyncState = {
   loading: false,
@@ -11,7 +10,7 @@ const initialState: userAsyncState = {
 
 
 export const fetchUsers = createAsyncThunk('user/fetchUsers', ()=>{
-  return axios.get('https://jsonplaceholder.typicode.com/users').then(response=>response.data)
+  return axios.get('https://whoget-api.onrender.com/api/users').then(response=>response.data)
 }) 
 const userSlice = createSlice({
   name: "user",
@@ -23,13 +22,13 @@ const userSlice = createSlice({
     });
     builder.addCase(fetchUsers.fulfilled, (state, action) => {
       state.loading = false,
-        state.users = action.payload,
-        state.error = '';
+      state.users = action.payload,
+      state.error = '';
     });
     builder.addCase(fetchUsers.rejected, (state, action) => {
       state.loading = false,
-        state.users = [],
-        state.error = action.error.message!==undefined? action.error.message: 'an error occurred' ;
+      state.users = [],
+      state.error = action.error.message!==undefined? action.error.message: 'an error occurred' ;
     });
   },
 })
