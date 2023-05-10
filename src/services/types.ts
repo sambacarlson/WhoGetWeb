@@ -13,6 +13,8 @@ export type askType = {
     hidden: boolean;
     hiddenDate?: string;
   };
+  createdAt?: string;
+  updatedAt?: string;
 };
 export type userType = {
   _id: string;
@@ -23,6 +25,8 @@ export type userType = {
   email?: string;
   whatsapp?: number;
   photo?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type askAsyncState = {

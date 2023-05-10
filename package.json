@@ -1,5 +1,4 @@
 {
-  "proxy": "https://whoget.onrender.com/",
   "name": "whoget-admin",
   "version": "0.1.0",
   "private": true,

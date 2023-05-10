@@ -1,13 +1,11 @@
+## Hi. Welcome to the whoGet Admin Dashboard repo.
 
-
-
-## Hi. I'm Carlson 🙂
-
-welcome to my own little corner <br>
-Feel free to poke around ✌🏿
-
-
-
+check out the live version here; <br>
+`https://whoget-admin.render.com/api/` <br>
+This dashboard is intended for use by the super user only. you need to sign in with the admin particulars. <br><br>
+feel free however to download and test the app yourself. <br>
+download or clone the repo, then run npm install to get dependeces, then npm run dev to start the development servers on your computer. <br>
+suggestions to improvements to the code are very much welcome.
 
 <!-- This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
