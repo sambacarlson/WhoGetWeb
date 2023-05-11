@@ -5,7 +5,8 @@ import axios from 'axios';
 const initialState: userAsyncState = {
   loading: false,
   users: [],
-  error: ''
+  error: '',
+  userToken: '',
 }
 
 const requestHelper = (method: string, url: string) => axios({
@@ -21,26 +22,30 @@ const requestHelper = (method: string, url: string) => axios({
 // fetch users
 export const fetchUsers = createAsyncThunk('users/fetchUsers', () => {
   // return axios.get('https://whoget-api.onrender.com/api/users').then(response => response.data)
-  return requestHelper('get', 'http://localhost:4000/api/users/').then(response => response.data)
+  return requestHelper('get', 'http://127.0.0.1:4000/api/users/').then(response => response.data)
 })
 
 // ban users
 export const banUsers = createAsyncThunk('users/banUser', (id: string) => {
   console.log('submitted id: ', id);
   // return axios.patch(`https://whoget-api.onreder.com/api/users/${id}`).then(response => response.data)
-  return axios.patch(`http://localhost:4000/api/users/${id}`).then(response => console.log('response:', response.data))
+  return axios.patch(`http://127.0.0.1:4000/api/users/${id}`).then(response => console.log('response:', response.data))
 })
 
 // unban users
 export const unbanUsers = createAsyncThunk('users/unbanUser', (id: string) => {
   // return axios.patch(`https://whoget-api.onreder.com/api/users/${id}`).then(response => response.data)
-  return axios.patch(`http://localhost:4000/api/users/${id}`).then(response => response.data)
+  return axios.patch(`http://127.0.0.1:4000/api/users/${id}`).then(response => response.data)
 })
 
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    setUser: (state, action) => {
+      state.userToken = action.payload
+    }
+  },
   extraReducers: (builder) => {
     // Fetch users
     builder.addCase(fetchUsers.pending, state => {
@@ -60,7 +65,7 @@ const userSlice = createSlice({
     builder.addCase(banUsers.pending, state => {
       state.loading = true;
     });
-    builder.addCase(banUsers.fulfilled, (state, action: PayloadAction) => {
+    builder.addCase(banUsers.fulfilled, (state, action: any) => {
       state.loading = false;
       console.log('payload:', action.payload);
       state.users = state.users.map(user => {
@@ -112,4 +117,5 @@ const userSlice = createSlice({
   },
 })
 
+export const { setUser } = userSlice.actions;
 export default userSlice.reducer;

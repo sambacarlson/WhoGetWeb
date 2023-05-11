@@ -4,7 +4,7 @@
 
 export type askType = {
   _id: string;
-  userInfo: {user_id: string, username: string, photo?: string;};
+  userInfo: { user_id: string, username: string, photo?: string; };
   message: string;
   categories: string[];
   image?: string;
@@ -20,7 +20,7 @@ export type userType = {
   _id: string;
   username: string;
   interests: string[];
-  status: { banned: boolean, bannedDate?: string};
+  status: { banned: boolean, bannedDate?: string };
   telephone: number;
   email?: string;
   whatsapp?: number;
@@ -39,4 +39,5 @@ export type userAsyncState = {
   loading: boolean;
   users: userType[];
   error: string;
+  userToken: string;
 }

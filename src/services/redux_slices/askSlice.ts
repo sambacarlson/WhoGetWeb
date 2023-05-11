@@ -10,17 +10,17 @@ const initialState: askAsyncState = {
 
 
 export const fetchAsks = createAsyncThunk('asks/fetchAsks', () => {
-  return axios.get('https://whoget-api.onrender.com/api/asks').then(response => response.data)
-  // return axios.get('https://localhost:4000/api/asks').then(response => response.data)
+  // return axios.get('https://whoget-api.onrender.com/api/asks').then(response => response.data)
+  return axios.get('http://127.0.0.1:4000/api/asks').then(response => response.data)
 })
 export const hideAsks = createAsyncThunk('asks/hideAsks', (id: string) => {
-  return axios.patch(`https://whoget-api.onreder.com/api/asks/${id}`).then(response => response.data)
-  // return axios.patch(`https://localhost:4000/api/asks/${id}`).then(response => response.data)
+  // return axios.patch(`https://whoget-api.onreder.com/api/asks/${id}`).then(response => response.data)
+  return axios.patch(`http://127.0.0.1:4000/api/asks/${id}`).then(response => response.data)
 })
 
 export const unhideAsks = createAsyncThunk('asks/unhideAsks', (id: string) => {
-  return axios.patch(`https://whoget-api.onreder.com/api/asks/${id}`).then(response => response.data)
-  // return axios.patch(`https://localhost/api/asks/${id}`).then(response => response.data)
+  // return axios.patch(`https://whoget-api.onreder.com/api/asks/${id}`).then(response => response.data)
+  return axios.patch(`http://127.0.0.1:4000/api/asks/${id}`).then(response => response.data)
 })
 
 const askSlice = createSlice({

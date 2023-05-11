@@ -1,9 +1,12 @@
 import Alerts from "@/components/Alerts";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { auth } from "@/firebase/firebaseConfig";
 import { useAppDispatch, useAppSelector } from "@/redux_store/hooks";
 import { fetchAsks, hideAsks } from "@/services/redux_slices/askSlice";
 import { askType } from "@/services/types";
+import { onAuthStateChanged } from "firebase/auth";
+import { stat } from "fs";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
@@ -12,13 +15,23 @@ import React, { useEffect, useState } from "react";
 const Asks = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  useEffect(() => {
-    dispatch(fetchAsks());
-  }, [dispatch]);
+  // const thisUser = useAppSelector((state) => state.user.user);
   const asks = useAppSelector((state) => state.ask);
+  const [asksData, setAsksData] = useState<askType[]>(asks.asks);
+  useEffect(() => {
+    // auth.onAuthStateChanged((user) => {
+    //   if (!user) {
+    //   }
+    // });
+    // console.log("thisuser-->", thisUser);
+    const jwtToken = JSON.parse(localStorage.getItem("@jwtToken") as string);
+    if (!jwtToken) {
+      router.replace("/authenticate");
+    }
+    dispatch(fetchAsks()).then((results) => setAsksData(results.payload));
+  }, [dispatch, router]);
   // console.log(asks)
   //states
-  const [asksData, setAsksData] = useState<askType[]>(asks.asks);
   //methodes
   const handleHide = (id: string) => {
     dispatch(hideAsks(id));
@@ -54,7 +67,7 @@ const Asks = () => {
               Asks: <span className="text-tertiary">{asksData.length}</span>
             </span>
             <span>
-              Hidden asks:{" "}
+              {/* Hidden asks:{" "} */}
               <span className="text-tertiary">
                 {asksData.filter((a) => a.status.hidden === true).length}
               </span>
@@ -80,39 +93,40 @@ const Asks = () => {
             </tr>
           </thead>
           <tbody>
-            {asksData.map((ask) => (
-              <tr
-                key={ask._id}
-                className="align-top h-12 hover:bg-tertiary hover:bg-opacity-10"
-              >
-                <td
-                  onClick={() => handleHide(ask._id)}
-                  className="pl-1 flex border-r-primary border-r md:border-0 pt-2 hover:cursor-pointer align-middle"
+            {asksData.length > 0 &&
+              asksData.map((ask) => (
+                <tr
+                  key={ask._id}
+                  className="align-top h-12 hover:bg-tertiary hover:bg-opacity-10"
                 >
-                  {ask.status.hidden ? (
-                    <span className="text-white bg-primary ring-1 hover:ring-2 hover:ring-tertiary ring-primary px-3 py-1 w-16 flex justify-center rounded-md">
-                      show
-                    </span>
-                  ) : (
-                    <span className="ring-1 hover:ring-2 hover:ring-primary ring-tertiary px-3 py-1 w-16 flex justify-center rounded-md">
-                      hide
-                    </span>
-                  )}
-                </td>
-                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 text-primaryLight">
-                  {ask.status.hiddenDate ? ask.status.hiddenDate : "_"}
-                </td>
-                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
-                  {ask.userInfo.username}
-                </td>
-                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 hideOverflowText">
-                  {ask.categories}
-                </td>
-                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 hideOverflowText">
-                  {ask.message}
-                </td>
-              </tr>
-            ))}
+                  <td
+                    onClick={() => handleHide(ask._id)}
+                    className="pl-1 flex border-r-primary border-r md:border-0 pt-2 hover:cursor-pointer align-middle"
+                  >
+                    {ask.status.hidden ? (
+                      <span className="text-white bg-primary ring-1 hover:ring-2 hover:ring-tertiary ring-primary px-3 py-1 w-16 flex justify-center rounded-md">
+                        show
+                      </span>
+                    ) : (
+                      <span className="ring-1 hover:ring-2 hover:ring-primary ring-tertiary px-3 py-1 w-16 flex justify-center rounded-md">
+                        hide
+                      </span>
+                    )}
+                  </td>
+                  <td className="pt-1 pl-1 border-r-primary border-r md:border-0 text-primaryLight">
+                    {ask.status.hiddenDate ? ask.status.hiddenDate : "_"}
+                  </td>
+                  <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
+                    {ask.userInfo.username}
+                  </td>
+                  <td className="pt-1 pl-1 border-r-primary border-r md:border-0 hideOverflowText">
+                    {ask.categories}
+                  </td>
+                  <td className="pt-1 pl-1 border-r-primary border-r md:border-0 hideOverflowText">
+                    {ask.message}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

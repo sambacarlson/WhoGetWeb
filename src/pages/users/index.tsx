@@ -4,18 +4,28 @@ import Navbar from "@/components/Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux_store/hooks";
 import { banUsers, fetchUsers } from "@/services/redux_slices/userSlice";
 import { userType } from "@/services/types";
-import React, { useEffect } from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 
 const userData: userType[] = [];
 
 const Users = () => {
   const dispatch = useAppDispatch();
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
+  const router = useRouter();
+  const [userState, setUserState] = useState<boolean>(false);
   const users = useAppSelector((state) => state.user);
-  useEffect(() => {});
   const [usersData, setUsersData] = React.useState<userType[]>(users.users);
+  useEffect(() => {
+    const jwtToken = JSON.parse(localStorage.getItem("@jwtToken") as string);
+    if (!jwtToken) {
+      router.replace("/authenticate");
+    }
+    dispatch(fetchUsers()).then((results) => {
+      setUsersData(results.payload);
+      // console.log("_-_-_-_>>>>", results.payload);
+    });
+  }, [dispatch, router]);
+  // useEffect(() => {}, [users]);
   const handleBan = (id: string) => {
     dispatch(banUsers(id));
     // for (let user of usersData) {
@@ -79,45 +89,46 @@ const Users = () => {
             </tr>
           </thead>
           <tbody>
-            {usersData.map((user) => (
-              <tr
-                key={user._id}
-                className="h-12 hover:bg-tertiary hover:bg-opacity-10"
-              >
-                <td
-                  onClick={() => handleBan(user._id)}
-                  className="pl-1 flex border-r-primary border-r md:border-0 pt-2 hover:cursor-pointer align-middle"
+            {usersData.length > 0 &&
+              usersData.map((user) => (
+                <tr
+                  key={user._id}
+                  className="h-12 hover:bg-tertiary hover:bg-opacity-10"
                 >
-                  {user.status.banned ? (
-                    <span className="text-white bg-primary ring-1 hover:ring-2 hover:ring-tertiary ring-primary px-3 py-1 w-16 flex justify-center rounded-md">
-                      unban
-                    </span>
-                  ) : (
-                    <span className="ring-1 hover:ring-2 hover:ring-primary ring-tertiary px-3 py-1 w-16 flex justify-center rounded-md">
-                      ban
-                    </span>
-                  )}
-                </td>
-                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
-                  {user.status.bannedDate ? user.status.bannedDate : "_"}
-                </td>
-                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
-                  {user.photo ? user.photo : "_"}
-                </td>
-                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
-                  {user.username}
-                </td>
-                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
-                  {user.whatsapp ? user.whatsapp : "_"}
-                </td>
-                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
-                  {user.telephone}
-                </td>
-                <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
-                  {user.email ? user.email : "_"}
-                </td>
-              </tr>
-            ))}
+                  <td
+                    onClick={() => handleBan(user._id)}
+                    className="pl-1 flex border-r-primary border-r md:border-0 pt-2 hover:cursor-pointer align-middle"
+                  >
+                    {user.status.banned ? (
+                      <span className="text-white bg-primary ring-1 hover:ring-2 hover:ring-tertiary ring-primary px-3 py-1 w-16 flex justify-center rounded-md">
+                        unban
+                      </span>
+                    ) : (
+                      <span className="ring-1 hover:ring-2 hover:ring-primary ring-tertiary px-3 py-1 w-16 flex justify-center rounded-md">
+                        ban
+                      </span>
+                    )}
+                  </td>
+                  <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
+                    {user.status.bannedDate ? user.status.bannedDate : "_"}
+                  </td>
+                  <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
+                    {user.photo ? user.photo : "_"}
+                  </td>
+                  <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
+                    {user.username}
+                  </td>
+                  <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
+                    {user.whatsapp ? user.whatsapp : "_"}
+                  </td>
+                  <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
+                    {user.telephone}
+                  </td>
+                  <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
+                    {user.email ? user.email : "_"}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
