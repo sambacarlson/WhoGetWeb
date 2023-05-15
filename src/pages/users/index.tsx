@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux_store/hooks";
 import { banUsers, fetchUsers } from "@/services/redux_slices/userSlice";
 import { userType } from "@/services/types";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
@@ -113,7 +114,17 @@ const Users = () => {
                     {user.status.bannedDate ? user.status.bannedDate : "_"}
                   </td>
                   <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
-                    {user.photo ? user.photo : "_"}
+                    {user.photo ? (
+                      <Image
+                        src={user.photo}
+                        alt="profile"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      "_"
+                    )}
                   </td>
                   <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
                     {user.username}

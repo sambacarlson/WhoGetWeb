@@ -35,8 +35,8 @@ const Authenticate = () => {
   }, [router]);
   const [error, setError] = useState<string>("");
   const [formData, setFormData] = useState<authElements>({
-    email: "sambacarlson@gmail.com",
-    password: "carlson445",
+    email: "",
+    password: "",
   });
   const handleFormChange = (event: React.FormEvent<HTMLInputElement>) => {
     const { name, value } = event.currentTarget;
