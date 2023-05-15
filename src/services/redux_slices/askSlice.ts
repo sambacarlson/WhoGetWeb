@@ -23,7 +23,6 @@ export const hideAsks = createAsyncThunk(
     // return axios.patch(`http://127.0.0.1:4000/api/asks/${id}`).then(response => response.data)
   }
 );
-
 export const unhideAsks = createAsyncThunk(
   "asks/unhideAsks",
   async (id: string) => {
