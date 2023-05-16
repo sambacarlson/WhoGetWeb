@@ -25,7 +25,9 @@ export const fetchUsers = createAsyncThunk("users/fetchUsers", () => {
   return axios
     .get("https://whoget-api.onrender.com/api/users")
     .then((response) => response.data);
-  // return requestHelper('get', 'http://127.0.0.1:4000/api/users/').then(response => response.data)
+  // return requestHelper("get", "http://127.0.0.1:4000/api/users/").then(
+  //   (response) => response.data
+  // );
 });
 
 // ban users
@@ -34,9 +36,15 @@ export const banUsers = createAsyncThunk(
   async (id: string) => {
     console.log("submitted id: ", id);
     return axios
-      .patch(`https://whoget-api.onreder.com/api/users/${id}`)
+      .patch(`https://whoget-api.onreder.com/api/users/${id}`, {
+        status: { banned: true, bannedDate: `${new Date()}` },
+      })
       .then((response) => response.data);
-    // return axios.patch(`http://127.0.0.1:4000/api/users/${id}`).then(response => console.log('response:', response.data))
+    // return axios
+    //   .patch(`http://127.0.0.1:4000/api/users/${id}`, {
+    //     status: { banned: true, bannedDate: `${new Date()}` },
+    //   })
+    //   .then((response) => console.log("response:", response.data));
   }
 );
 
@@ -45,9 +53,15 @@ export const unbanUsers = createAsyncThunk(
   "users/unbanUser",
   async (id: string) => {
     return axios
-      .patch(`https://whoget-api.onreder.com/api/users/${id}`)
+      .patch(`https://whoget-api.onreder.com/api/users/${id}`, {
+        status: { banned: false, bannedDate: "" },
+      })
       .then((response) => response.data);
-    // return axios.patch(`http://127.0.0.1:4000/api/users/${id}`).then(response => response.data)
+    // return axios
+    //   .patch(`http://127.0.0.1:4000/api/users/${id}`, {
+    //     status: { banned: false, bannedDate: "" },
+    //   })
+    //   .then((response) => response.data);
   }
 );
 

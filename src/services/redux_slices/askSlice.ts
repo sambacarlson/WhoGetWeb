@@ -12,24 +12,34 @@ export const fetchAsks = createAsyncThunk("asks/fetchAsks", () => {
   return axios
     .get("https://whoget-api.onrender.com/api/asks")
     .then((response) => response.data);
-  // return axios.get('http://127.0.0.1:4000/api/asks').then(response => response.data)
+  // return axios
+  //   .get("http://127.0.0.1:4000/api/asks")
+  //   .then((response) => response.data);
 });
 export const hideAsks = createAsyncThunk(
   "asks/hideAsks",
   async (id: string) => {
     return axios
-      .patch(`https://whoget-api.onreder.com/api/asks/${id}`)
+      .patch(`https://whoget-api.onreder.com/api/asks/${id}`, {
+        status: { hidden: true, hiddenDate: `${new Date()}` },
+      })
       .then((response) => response.data);
-    // return axios.patch(`http://127.0.0.1:4000/api/asks/${id}`).then(response => response.data)
+    // return axios
+    //   .patch(`http://127.0.0.1:4000/api/asks/${id}`)
+    //   .then((response) => response.data);
   }
 );
 export const unhideAsks = createAsyncThunk(
   "asks/unhideAsks",
   async (id: string) => {
     return axios
-      .patch(`https://whoget-api.onreder.com/api/asks/${id}`)
+      .patch(`https://whoget-api.onreder.com/api/asks/${id}`, {
+        status: { hidden: false, hiddenDate: "" },
+      })
       .then((response) => response.data);
-    // return axios.patch(`http://127.0.0.1:4000/api/asks/${id}`).then(response => response.data)
+    // return axios
+    //   .patch(`http://127.0.0.1:4000/api/asks/${id}`)
+    //   .then((response) => response.data);
   }
 );
 

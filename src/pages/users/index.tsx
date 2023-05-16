@@ -7,6 +7,7 @@ import { userType } from "@/services/types";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 
 const userData: userType[] = [];
 
