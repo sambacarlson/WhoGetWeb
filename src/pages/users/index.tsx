@@ -1,55 +1,59 @@
 import Alerts from "@/components/Alerts";
 import Footer from "@/components/Footer";
+import Loading from "@/components/Loading";
 import Navbar from "@/components/Navbar";
-import { useAppDispatch, useAppSelector } from "@/redux_store/hooks";
-import { banUsers, fetchUsers } from "@/services/redux_slices/userSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { BASE_URL } from "@/services/constants";
 import { userType } from "@/services/types";
+import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
 
-const userData: userType[] = [];
+///FIXME: these independent functions should be moved to their own file.
+const fetchUsers = async () => {
+  try {
+    const users = await axios.get(`${BASE_URL}/users/all`);
+    return users.data;
+    // const response = await fetch(`${BASE_URL}/users/all`);
+    // const users = await response.json();
+    // return users;
+  } catch (error) {
+    throw error
+  }
+}
 
 const Users = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const [userState, setUserState] = useState<boolean>(false);
   const users = useAppSelector((state) => state.user);
-  const [usersData, setUsersData] = React.useState<userType[]>(users.users);
+  const [usersData, setUsersData] = React.useState<userType[]>(users);
+  const [busy, setBusy] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
   useEffect(() => {
+    setBusy(true);
     const jwtToken = JSON.parse(localStorage.getItem("@jwtToken") as string);
     if (!jwtToken) {
       router.replace("/authenticate");
     }
-    dispatch(fetchUsers()).then((results) => {
-      setUsersData(results.payload);
-      // console.log("_-_-_-_>>>>", results.payload);
-    });
-  }, [dispatch, router]);
-  // useEffect(() => {}, [users]);
+    ///fetch data from db
+    fetchUsers()
+      .then((data) => { setUsersData(data); setBusy(false) })
+      .catch((error) => { setError(`${error.message}`); setBusy(false) });
+  }, [dispatch, router, usersData]);
+
+  // FIXME: remove these log statements
+  console.log('busy==>>', busy)
+  console.log('askData==>>', usersData)
+  console.log('error==>>', error)
+
   const handleBan = (id: string) => {
-    dispatch(banUsers(id));
-    // for (let user of usersData) {
-    // if (user._id === id) {
-    //   const _status = usersData[usersData.indexOf(user)].status;
-    //   const date = new Date();
-    //   const formatedDate = `${date.getDate()}/${
-    //     date.getMonth() + 1
-    //   }/${date.getFullYear()}`;
-    // setUsersData(prevData => {
-    //   const newData: userType[] = Array.from(prevData);
-    //   newData[prevData.indexOf(user)].status = { banned: !_status.banned, bannedDate: !_status.banned ? formatedDate : '' }
-    //   return newData
-    // })
-    // }
-    // }
   };
   return (
     <div className="flex flex-col justify-between min-h-[100vh]">
-      {users.loading && <Alerts type="info" message="Loading..." />}
-      {!users.loading && users.error && (
-        <Alerts type="error" message={users.error} />
+      {busy && <Loading />}
+      {error && (
+        <Alerts type="error" message={error} closeFn={() => setError("")} />
       )}
       <Navbar />
       <div className="flex-1 p-5 md:p-14 text-primary overflow-x-scroll">
@@ -61,7 +65,7 @@ const Users = () => {
             <span>
               Banned users:{" "}
               <span className="text-tertiary">
-                {usersData.filter((u) => u.status.banned === true).length}
+                {usersData.filter(user => user.status.banned === true).length}
               </span>
             </span>
           </caption>

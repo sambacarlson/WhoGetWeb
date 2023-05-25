@@ -1,11 +1,11 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase/firebaseConfig";
 import Alerts from "@/components/Alerts";
-import { useAppDispatch } from "@/redux_store/hooks";
-import { setUser } from "@/services/redux_slices/userSlice";
+import { useAppDispatch } from "@/redux/hooks";
+import Loading from "@/components/Loading";
 
 interface authFormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -24,19 +24,18 @@ interface authElements {
 const Authenticate = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  /** Handle form events */
-  // const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [busy, setBusy] = useState<boolean>(false);
+
   useEffect(() => {
     const jwtToken = JSON.parse(localStorage.getItem("@jwtToken") as string);
-    // console.log("token:====>>", jwtToken);
     if (jwtToken) {
-      router.push("/users");
+      router.replace("/users");
     }
   }, [router]);
-  const [error, setError] = useState<string>("");
   const [formData, setFormData] = useState<authElements>({
-    email: "",
-    password: "",
+    email: "sambacarlson@yahoo.com",
+    password: "carlson445",
   });
   const handleFormChange = (event: React.FormEvent<HTMLInputElement>) => {
     const { name, value } = event.currentTarget;
@@ -48,6 +47,7 @@ const Authenticate = () => {
     });
   };
   const handleSubmit = async (event: React.FormEvent<authForm>) => {
+    setBusy(true);
     event.preventDefault();
     try {
       const thisUser = await signInWithEmailAndPassword(
@@ -58,8 +58,8 @@ const Authenticate = () => {
       const token = await thisUser.user.getIdToken();
       localStorage.setItem("@jwtToken", JSON.stringify(token));
       // const tokens = JSON.parse(localStorage.getItem("@jwtToken") as string);
-      // dispatch(setUser({ thisUser }));
       // setFormData({ email: "", password: "" });
+      setBusy(false)
       router.replace("/users");
     } catch (error) {
       setError(`${error}`);
@@ -85,6 +85,7 @@ const Authenticate = () => {
                 closeFn={() => setError("")}
               />
             )}
+            {busy && !error && <Loading />}
             <div className="">
               <form
                 onSubmit={handleSubmit}

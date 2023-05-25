@@ -1,43 +1,37 @@
 /**
  * Props and types are defined here for the entire Application.
  */
-
+/// the complete ask type
 export type askType = {
   _id: string;
-  userInfo: { user_id: string, username: string, photo?: string; };
+  user: any;
   message: string;
   categories: string[];
-  image?: string;
-  expiry: number;
+  images: string[];
+  expiry: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   status: {
     hidden: boolean;
     hiddenDate?: string;
   };
-  createdAt?: string;
-  updatedAt?: string;
-};
+  createdAt: string;
+  updatedAt: string;
+}
+
+/// the complete ask type
 export type userType = {
   _id: string;
   username: string;
+  oAuthId: string;
+  oAuthProvider: "google" | "facebook";
   interests: string[];
-  status: { banned: boolean, bannedDate?: string };
+  status: {
+    banned: boolean;
+    bannedDate: string;
+  },
   telephone: number;
-  email?: string;
-  whatsapp?: number;
-  photo?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export type askAsyncState = {
-  loading: boolean;
-  asks: askType[];
-  error: string;
-};
-
-export type userAsyncState = {
-  loading: boolean;
-  users: userType[];
-  error: string;
-  userToken: string;
+  email: string;
+  whatsapp: number;
+  photo: string;
+  createdAt: string;
+  updatedAt: string;
 }

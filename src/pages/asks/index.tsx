@@ -1,64 +1,62 @@
 import Alerts from "@/components/Alerts";
 import Footer from "@/components/Footer";
+import Loading from "@/components/Loading";
 import Navbar from "@/components/Navbar";
-import { auth } from "@/firebase/firebaseConfig";
-import { useAppDispatch, useAppSelector } from "@/redux_store/hooks";
-import { fetchAsks, hideAsks } from "@/services/redux_slices/askSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { BASE_URL } from "@/services/constants";
 import { askType } from "@/services/types";
-import { onAuthStateChanged } from "firebase/auth";
-import { formatDistanceToNow } from "date-fns";
-import { stat } from "fs";
+import axios from "axios";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
-// const askData: askType[] = [];
+///FIXME: these independent functions should be moved to their own file.
+const fetchAsks = async () => {
+  try {
+    const asks = await axios.get(`${BASE_URL}/asks/all`);
+    // const response = await fetch(`${BASE_URL}/asks/all`);
+    // const asks = await response.json();
+    // return asks
+    return asks.data;
+  } catch (error) {
+    throw error
+  }
+}
 
 const Asks = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  // const thisUser = useAppSelector((state) => state.user.user);
   const asks = useAppSelector((state) => state.ask);
-  const [asksData, setAsksData] = useState<askType[]>(asks.asks);
+  const [asksData, setAsksData] = useState<askType[]>(asks);
+  const [busy, setBusy] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
   useEffect(() => {
-    // auth.onAuthStateChanged((user) => {
-    //   if (!user) {
-    //   }
-    // });
-    // console.log("thisuser-->", thisUser);
+    setBusy(true);
+    //get token from local storage
     const jwtToken = JSON.parse(localStorage.getItem("@jwtToken") as string);
     if (!jwtToken) {
       router.replace("/authenticate");
     }
-    dispatch(fetchAsks()).then((results) => setAsksData(results.payload));
-  }, [dispatch, router]);
-  // console.log(asks)
-  //states
-  //methodes
-  const handleHide = (id: string) => {
-    dispatch(hideAsks(id));
-    // router.reload();
-    // for (let ask of asksData) {
-    // if (ask._id === id) {
-    // const _status = asksData[asksData.indexOf(ask)].status;
-    // const date = new Date();
-    // const formatedDate = `${date.getDate()} - ${
-    //   date.getMonth() + 1
-    // } - ${date.getFullYear()}`;
-    // setAsksData(prevData => {
-    //   const newData: askType[] = Array.from(prevData);
-    //   newData[prevData.indexOf(ask)].status = { hidden: !_status.hidden, hiddenDate: !_status.hidden ? formatedDate : '' }
-    //   // console.log(newData[prevData.indexOf(ask)])
-    //   return newData
-    // })
-    // }
-    // }
-  };
+    ///fetch data from db
+    fetchAsks()
+      .then((data) => { setAsksData(data); setBusy(false); })
+      .catch((error) => { setError(`${error.message}`); setBusy(false); });
+  }, [dispatch, router, asksData]);
 
+  // FIXME: remove these log statements
+  console.log('busy==>>', busy)
+  console.log('askData==>>', asksData)
+  console.log('error==>>', error)
+
+
+  //methods
+  const handleHide = (id: string) => { }
+
+  //return
   return (
     <div className="flex flex-col justify-between min-h-[100vh]">
-      {asks.loading && <Alerts type="info" message="Loading..." />}
-      {!asks.loading && asks.error && (
-        <Alerts type="error" message={asks.error} />
+      {busy && !error && <Loading />}
+      {error && (
+        <Alerts type="error" message={error} closeFn={() => setError("")} />
       )}
       <Navbar />
       <div className="flex-1 m-5 md:m-[48px] text-secondary overflow-x-scroll">
@@ -68,9 +66,9 @@ const Asks = () => {
               Asks: <span className="text-tertiary">{asksData.length}</span>
             </span>
             <span>
-              {/* Hidden asks:{" "} */}
+              Hidden asks: {" "}
               <span className="text-tertiary">
-                {asksData.filter((a) => a.status.hidden === true).length}
+                {asksData.filter((ask) => ask.status.hidden === true).length}
               </span>
             </span>
           </caption>
@@ -118,7 +116,7 @@ const Asks = () => {
                     {ask.status.hiddenDate ? ask.status.hiddenDate : "_"}
                   </td>
                   <td className="pt-1 pl-1 border-r-primary border-r md:border-0 ">
-                    {ask.userInfo.username}
+                    {ask.user.username}
                   </td>
                   <td className="pt-1 pl-1 border-r-primary border-r md:border-0 hideOverflowText">
                     {ask.categories}

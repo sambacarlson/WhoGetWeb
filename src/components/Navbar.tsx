@@ -4,11 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase/firebaseConfig";
-import { useAppDispatch } from "@/redux_store/hooks";
-import { setUser } from "@/services/redux_slices/userSlice";
 
 const Navbar = () => {
-  const dispatch = useAppDispatch();
   const { asPath } = useRouter();
   const router = useRouter();
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -16,7 +13,6 @@ const Navbar = () => {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      // dispatch(setUser(""));
       localStorage.clear();
       router.push("/authenticate");
     } catch (error) {
